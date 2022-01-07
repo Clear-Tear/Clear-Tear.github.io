@@ -7,14 +7,12 @@ title:
   schedule: 日程表
 menu:
   home: 首页
-  archives: 归档
-  categories: 分类
-  tags: 标签
+  learning:  学业
+  acedemics: 学术
+  thinking: 想法
+  appreciate: 评鉴
+  camera: 宣传
   about: 关于
-  search: 搜索
-  schedule: 日程表
-  sitemap: 站点地图
-  commonweal: 公益 404
 sidebar:
   overview: 站点概览
   toc: 文章目录

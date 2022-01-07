@@ -117,11 +117,11 @@ darkmode: false
 # External url should start with http:// or https://
 menu:
   home: / || fa fa-home
-  #tags: /tags/ || fa fa-tags
-  categories: /categories/ || fa fa-th
-  archives: /archives/ || fa fa-archive
-  #schedule: /schedule/ || fa fa-calendar
-  #sitemap: /sitemap.xml || fa fa-sitemap
+  learning: /learning/ || fa fa-archive
+  acedemics: /acedemics/ || fa fa-archive
+  thinking: /thinking/ || fa fa-tags
+  appreciate: /appreciate || fa fa-tags
+  camera: /camera/ || fa fa-sitemap
   #commonweal: /404/ || fa fa-heartbeat
   about: /about/ || fa fa-user
 

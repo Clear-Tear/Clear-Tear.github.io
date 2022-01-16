@@ -28,7 +28,7 @@
 <meta property="og:description" content="&amp;emsp;前些天看学院派Acdemia的新视频，里面有个关于社会学和存在主义的阐述我觉得很棒，完全解答了我对西方哲学一些发展和哲人的不理解，特此用自己的语言分享一下。 &amp;emsp;谈到旧西方时代，永远绕不过去的坎，就是**”宗教”。虽然现在信奉科学的我们（还是个东方人），往往对基督教嗤之以鼻。但是不得不承认的是，宗教在很长时期，在西方起到了极为重要的作用：它定义了人存在的价值**。 &amp;emsp;">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-10-07T16:00:00.000Z">
-<meta property="article:modified_time" content="2022-01-09T08:10:48.186Z">
+<meta property="article:modified_time" content="2022-01-09T08:10:50.000Z">
 <meta property="article:author" content="ClearTear">
 <meta property="article:tag" content="哲学">
 <meta property="article:tag" content="思考">
@@ -128,7 +128,7 @@
   </li>
         <li class="menu-item menu-item-acedemics">
 
-    <a href="/acedemics/" rel="section"><i class="fa fa-archive fa-fw"></i>学术</a>
+    <a href="/acedemics/" rel="section"><i class="fa fa-archive fa-fw"></i>学术项目</a>
 
   </li>
         <li class="menu-item menu-item-thinking">
@@ -200,7 +200,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-09 16:10:48" itemprop="dateModified" datetime="2022-01-09T16:10:48+08:00">2022-01-09</time>
+                <time title="修改时间：2022-01-09 16:10:50" itemprop="dateModified" datetime="2022-01-09T16:10:50+08:00">2022-01-09</time>
               </span>
 
           
@@ -271,8 +271,8 @@
       <i class="fa fa-chevron-left"></i> 厦去秋又来
     </a></div>
       <div class="post-nav-item">
-    <a href="/2021/12/07/Anti-Growth/" rel="next" title="Anti-Growth">
-      Anti-Growth <i class="fa fa-chevron-right"></i>
+    <a href="/2021/11/07/%E7%8E%AF%E5%B2%9B%E9%AA%91%E8%A1%8C/" rel="next" title="环岛骑行">
+      环岛骑行 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -346,12 +346,12 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">46</span>
+          <span class="site-state-item-count">61</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-count">22</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
@@ -449,6 +449,26 @@
 
 
 
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
 
 
 

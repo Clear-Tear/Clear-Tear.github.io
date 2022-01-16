@@ -27,8 +27,8 @@
 <meta property="og:site_name" content="一苇杭之">
 <meta property="og:description" content="​    ◆ 祎航、一行、一行清泪、清泪、一苇杭之、11….. ​    ◆ 如果你在广袤互联网的哪个地方看到这些称谓（&amp;各种变体），那大概有可能的确是我。  学术&amp;课业    ◆ 大学本科大四在读，XMU信息学院计算机系码农一枚，同时也算是WISE统计系的一员。目前的期望是顺利毕业，以及还有学上。    ◆ 擅长的东西几乎没有（笑），目前人生重心是在往数据挖掘方向在走，在努力结合">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-01-09T09:50:27.552Z">
-<meta property="article:modified_time" content="2022-01-09T09:50:27.552Z">
+<meta property="article:published_time" content="2022-01-16T12:41:02.936Z">
+<meta property="article:modified_time" content="2022-01-09T09:50:28.000Z">
 <meta property="article:author" content="ClearTear">
 <meta name="twitter:card" content="summary">
 
@@ -126,7 +126,7 @@
   </li>
         <li class="menu-item menu-item-acedemics">
 
-    <a href="/acedemics/" rel="section"><i class="fa fa-archive fa-fw"></i>学术</a>
+    <a href="/acedemics/" rel="section"><i class="fa fa-archive fa-fw"></i>学术项目</a>
 
   </li>
         <li class="menu-item menu-item-thinking">
@@ -288,12 +288,12 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">46</span>
+          <span class="site-state-item-count">61</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-count">22</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
@@ -391,6 +391,26 @@
 
 
 
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
 
 
 

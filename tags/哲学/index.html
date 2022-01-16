@@ -123,7 +123,7 @@
   </li>
         <li class="menu-item menu-item-acedemics">
 
-    <a href="/acedemics/" rel="section"><i class="fa fa-archive fa-fw"></i>学术</a>
+    <a href="/acedemics/" rel="section"><i class="fa fa-archive fa-fw"></i>学术项目</a>
 
   </li>
         <li class="menu-item menu-item-thinking">
@@ -220,6 +220,26 @@
     </header>
   </article>
 
+  <article itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <div class="post-meta">
+        <time itemprop="dateCreated"
+              datetime="2020-07-20T00:00:00+08:00"
+              content="2020-07-20">
+          07-20
+        </time>
+      </div>
+
+      <div class="post-title">
+          <a class="post-title-link" href="/2020/07/20/%E4%BB%8E%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD%E7%9A%84%E5%8F%91%E5%B1%95%E7%9C%8B%E5%BE%85%E2%80%9C%E5%BF%83%E7%81%B5%E2%80%9D/" itemprop="url">
+            <span itemprop="name">从人工智能的发展看待“心灵”</span>
+          </a>
+      </div>
+
+    </header>
+  </article>
+
     </div>
   </div>
   
@@ -292,12 +312,12 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">46</span>
+          <span class="site-state-item-count">61</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-count">22</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
@@ -395,6 +415,26 @@
 
 
 
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
 
 
 

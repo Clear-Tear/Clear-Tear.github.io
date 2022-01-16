@@ -28,7 +28,7 @@
 <meta property="og:description" content="&amp;emsp;他埋着头，橘红色的夕阳光透过臂弯刺亮那片刻意营造出来的狭窄的黑暗空间。他不自然地扭一扭，将眼睛死死地压在自己的手臂上，方才重新收获了那片黑暗。 &amp;emsp;浪涌潮起潮落，不知过了多久，被阳光灼得炽热的背已在清透的海风中泛起凉意，被泪水濡湿的臂弯也开始风干，变得粘滞又干涩。他才抬起了头。恍然入目的璀璨星河让他的思维一瞬间突然空白。自然的伟力顺着星辉与浪潮向他涌来。却也在没有那份震撼人心的">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-10-04T16:00:00.000Z">
-<meta property="article:modified_time" content="2022-01-09T08:10:05.033Z">
+<meta property="article:modified_time" content="2022-01-09T08:10:06.000Z">
 <meta property="article:author" content="ClearTear">
 <meta property="article:tag" content="音乐">
 <meta property="article:tag" content="征文">
@@ -127,7 +127,7 @@
   </li>
         <li class="menu-item menu-item-acedemics">
 
-    <a href="/acedemics/" rel="section"><i class="fa fa-archive fa-fw"></i>学术</a>
+    <a href="/acedemics/" rel="section"><i class="fa fa-archive fa-fw"></i>学术项目</a>
 
   </li>
         <li class="menu-item menu-item-thinking">
@@ -199,7 +199,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-09 16:10:05" itemprop="dateModified" datetime="2022-01-09T16:10:05+08:00">2022-01-09</time>
+                <time title="修改时间：2022-01-09 16:10:06" itemprop="dateModified" datetime="2022-01-09T16:10:06+08:00">2022-01-09</time>
               </span>
 
           
@@ -260,8 +260,8 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/08/26/%E6%B5%85%E8%AF%9D'%E6%84%8F%E8%AF%86%E5%BD%A2%E6%80%81'/" rel="prev" title="浅话'意识形态'">
-      <i class="fa fa-chevron-left"></i> 浅话'意识形态'
+    <a href="/2020/09/13/%E4%B8%AD%E5%B0%8F%E5%BE%AE%E4%BC%81%E4%B8%9A%E7%9A%84%E4%BF%A1%E8%B4%B7%E5%86%B3%E7%AD%96/" rel="prev" title="中小微企业的信贷决策">
+      <i class="fa fa-chevron-left"></i> 中小微企业的信贷决策
     </a></div>
       <div class="post-nav-item">
     <a href="/2020/10/18/%E3%83%B3%E3%82%BF%E3%82%A4%E3%83%88%E3%83%AB/" rel="next" title="ンタイトル">
@@ -339,12 +339,12 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">46</span>
+          <span class="site-state-item-count">61</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-count">22</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
@@ -442,6 +442,26 @@
 
 
 
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
 
 
 

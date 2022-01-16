@@ -28,7 +28,7 @@
 <meta property="og:description" content="&amp;emsp;从很小的时候，我就对所谓的哲学特别感兴趣。尤其是一堆高大上的专有名词，什么形而上学啦，二元论啦，唯心主义等等……后来，对哲学有了一些从文学上走进的理解。认识了叔本华、尼采、黑格尔、马克思……（大多数是为了写作文写出高逼格的论据而了解的） &amp;emsp;直到现在上了大学，选修了哲学的课程，也从哲学入门的导作开始真正尝试了解这门学科，才知道哲学的真正着力点是在于，旨在用一个人的严密逻辑或思想">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-08-18T16:00:00.000Z">
-<meta property="article:modified_time" content="2022-01-09T08:10:59.891Z">
+<meta property="article:modified_time" content="2022-01-09T08:11:00.000Z">
 <meta property="article:author" content="ClearTear">
 <meta property="article:tag" content="网文">
 <meta property="article:tag" content="思考">
@@ -127,7 +127,7 @@
   </li>
         <li class="menu-item menu-item-acedemics">
 
-    <a href="/acedemics/" rel="section"><i class="fa fa-archive fa-fw"></i>学术</a>
+    <a href="/acedemics/" rel="section"><i class="fa fa-archive fa-fw"></i>学术项目</a>
 
   </li>
         <li class="menu-item menu-item-thinking">
@@ -199,7 +199,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-09 16:10:59" itemprop="dateModified" datetime="2022-01-09T16:10:59+08:00">2022-01-09</time>
+                <time title="修改时间：2022-01-09 16:11:00" itemprop="dateModified" datetime="2022-01-09T16:11:00+08:00">2022-01-09</time>
               </span>
 
           
@@ -264,12 +264,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2021/06/02/%E6%80%9D%E6%83%B3%E7%8A%AF/" rel="prev" title="思想犯">
-      <i class="fa fa-chevron-left"></i> 思想犯
+    <a href="/2021/07/28/%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98%EF%BC%88%E7%BB%9F%E8%AE%A1%EF%BC%89/" rel="prev" title="数据挖掘（统计）">
+      <i class="fa fa-chevron-left"></i> 数据挖掘（统计）
     </a></div>
       <div class="post-nav-item">
-    <a href="/2021/10/01/%E5%8E%A6%E5%8E%BB%E7%A7%8B%E5%8F%88%E6%9D%A5/" rel="next" title="厦去秋又来">
-      厦去秋又来 <i class="fa fa-chevron-right"></i>
+    <a href="/2021/09/10/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E6%94%BB%E5%87%BB%E2%80%94NCF%E4%BB%A3%E7%90%86%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1%E4%B8%8E%E9%97%AE%E9%A2%98/" rel="next" title="推荐系统攻击—NCF代理模型设计与问题">
+      推荐系统攻击—NCF代理模型设计与问题 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -343,12 +343,12 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">46</span>
+          <span class="site-state-item-count">61</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-count">22</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
@@ -446,6 +446,26 @@
 
 
 
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
 
 
 

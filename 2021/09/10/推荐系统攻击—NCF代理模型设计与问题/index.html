@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"clear-tear.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="基于Embbeding技术的代理模型的推荐系统攻击——暑期工作总结1. 背景与目标​        种子论文Revisiting Adversarially Learned Injection Attacks Against RecommenderSystems​实现了以**WRMF (weighted regularized matrix factorization)**模型作为代理模型的推荐系">
+<meta property="og:type" content="article">
+<meta property="og:title" content="推荐系统攻击—NCF代理模型设计与问题">
+<meta property="og:url" content="https://clear-tear.github.io/2021/09/10/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E6%94%BB%E5%87%BB%E2%80%94NCF%E4%BB%A3%E7%90%86%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1%E4%B8%8E%E9%97%AE%E9%A2%98/index.html">
+<meta property="og:site_name" content="一苇杭之">
+<meta property="og:description" content="基于Embbeding技术的代理模型的推荐系统攻击——暑期工作总结1. 背景与目标​        种子论文Revisiting Adversarially Learned Injection Attacks Against RecommenderSystems​实现了以**WRMF (weighted regularized matrix factorization)**模型作为代理模型的推荐系">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="file:///D:/tencent/tencentData/861523222/Image/C2C/Image3%7BAC18562A-C99F-16F1-384E-B42B84783343%7D.jpg">
+<meta property="og:image" content="c:/Users/DELL/AppData/Roaming/Typora/typora-user-images/image-20210906190929854.png">
+<meta property="og:image" content="c:/Users/DELL/AppData/Roaming/Typora/typora-user-images/image-20210906192352649.png">
+<meta property="article:published_time" content="2021-09-09T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-01-16T13:37:22.865Z">
+<meta property="article:author" content="ClearTear">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="file:///D:/tencent/tencentData/861523222/Image/C2C/Image3%7BAC18562A-C99F-16F1-384E-B42B84783343%7D.jpg">
+
+<link rel="canonical" href="https://clear-tear.github.io/2021/09/10/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E6%94%BB%E5%87%BB%E2%80%94NCF%E4%BB%A3%E7%90%86%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1%E4%B8%8E%E9%97%AE%E9%A2%98/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>推荐系统攻击—NCF代理模型设计与问题 | 一苇杭之</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">一苇杭之</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">小小的自留地</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-learning">
+
+    <a href="/learning/" rel="section"><i class="fa fa-archive fa-fw"></i>课程与学业</a>
+
+  </li>
+        <li class="menu-item menu-item-acedemics">
+
+    <a href="/acedemics/" rel="section"><i class="fa fa-archive fa-fw"></i>学术项目</a>
+
+  </li>
+        <li class="menu-item menu-item-thinking">
+
+    <a href="/thinking/" rel="section"><i class="fa fa-tags fa-fw"></i>思考与想法</a>
+
+  </li>
+        <li class="menu-item menu-item-appreciate">
+
+    <a href="/appreciate/" rel="section"><i class="fa fa-tags fa-fw"></i>评鉴</a>
+
+  </li>
+        <li class="menu-item menu-item-camera">
+
+    <a href="/camera/" rel="section"><i class="fa fa-sitemap fa-fw"></i>摄影与宣传</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://clear-tear.github.io/2021/09/10/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E6%94%BB%E5%87%BB%E2%80%94NCF%E4%BB%A3%E7%90%86%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1%E4%B8%8E%E9%97%AE%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.jpg">
+      <meta itemprop="name" content="ClearTear">
+      <meta itemprop="description" content="感觉那时仰望过的星空也笑话我了">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一苇杭之">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          推荐系统攻击—NCF代理模型设计与问题
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-09-10 00:00:00" itemprop="dateCreated datePublished" datetime="2021-09-10T00:00:00+08:00">2021-09-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-01-16 21:37:22" itemprop="dateModified" datetime="2022-01-16T21:37:22+08:00">2022-01-16</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="基于Embbeding技术的代理模型的推荐系统攻击"><a href="#基于Embbeding技术的代理模型的推荐系统攻击" class="headerlink" title="基于Embbeding技术的代理模型的推荐系统攻击"></a>基于Embbeding技术的代理模型的推荐系统攻击</h1><h1 id="——暑期工作总结"><a href="#——暑期工作总结" class="headerlink" title="——暑期工作总结"></a>——暑期工作总结</h1><h2 id="1-背景与目标"><a href="#1-背景与目标" class="headerlink" title="1. 背景与目标"></a>1. 背景与目标</h2><p>​        种子论文<strong>Revisiting Adversarially Learned Injection Attacks Against RecommenderSystems​</strong>实现了以**WRMF (weighted regularized matrix factorization)**模型作为代理模型的推荐系统攻击。但以WRMF作为代理模型对不同的模型的攻击效果并不尽如意。为了提高推荐的效果，有以下两种思路对代理模型进行改进:</p>
+<ol>
+<li><p>当代理模型与被攻击模型一致时，理论上而言，攻击的效果能达到最佳。但该思路几乎没有实际价值，因为我们难以得知具体的被攻击模型是何。</p>
+</li>
+<li><p>通过集成的方法，集成各种推荐模型做为代理模型，由于该模型兼具各类推荐方法原理，使得该代理模型对任何实际的被攻击模型都有较好的攻击泛用性。</p>
+</li>
+</ol>
+<p>​       种子论文已经实现了WRMF，以及itemAE等基于矩阵分解原理的推荐模型作为代理模型的攻击。但要集成大量的代理模型，Embbeding类的推荐模型绝对是绕不过的一个极大重要的大类。</p>
+<p>​      而种子论文也提到了，受限于Tensorflow、Pytorch等库是基于SGD的设计，自动求导十分重要。而Embbeding技术的模型梯度无法通过自动求导得到，因此无法使用原论文中的<strong>第二种简化方法</strong>。因此种子论文的方法无法适用于Embbeding类的推荐模型。</p>
+<p>​     所以我们的努力集中在，尝试实现基于Embbeding技术的推荐模型作为代理模型。下文以经典的NCF模型为例子，探讨如何设计。</p>
+<h2 id="2-纯数学理论模型（与原论文有少许变换，但基本一致）"><a href="#2-纯数学理论模型（与原论文有少许变换，但基本一致）" class="headerlink" title="2. 纯数学理论模型（与原论文有少许变换，但基本一致）"></a>2. 纯数学理论模型（与原论文有少许变换，但基本一致）</h2><p>​        基于Embbeding技术的代理模型，有很多与矩阵分解的代理模型有不同。</p>
+<p>​        由于只更改了代理模型，所以Bi-优化模型与种子论文一致。但代理模型的内部模型有许多不同，如下：</p>
+<p>​        首先，对于种子论文中的公式：<br>$$<br>\nabla_\hat{X}L_{adv}=\frac{\partial L_{adv}}{\partial \hat{X}}+\frac{\partial L_{adv}}{\partial \theta^*}\frac{\partial \theta^*}{\partial \hat{X}} \tag1<br>$$<br>​        需要修改为：<br>$$<br>\nabla_\hat{X}L_{adv}=\frac{\partial L_{adv}}{\partial \theta^*}\frac{\partial \theta^*}{\partial \hat{X}} \tag2<br>$$<br>​        因为基于Embbeding技术的代理模型，梯度图如下：</p>
+<p><img src="file:///D:\tencent\tencentData\861523222\Image\C2C\Image3{AC18562A-C99F-16F1-384E-B42B84783343}.jpg"></p>
+<p>​       由该图可知：（1）式的的基本前提应该是下所述的公式（3）：<br>$$<br>L_{adv}=f(\theta^*,X^{hat}) 且\theta^*=g(X^{hat})\tag3<br>$$<br>​       而基于Embbeding技术的NCF模型是这样的：<br>$$<br>L_{adv}=f(\theta^*) 且\theta^*=g(X^{hat})\tag4<br>$$<br>​       所以模型更正为公式（2）。</p>
+<p>​       由公式（2）继续推导，由于我们使用的SGD，即下式的原理：</p>
+<p><img src="C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20210906190929854.png" alt="image-20210906190929854"></p>
+<p>$$<br>\tag5<br>$$<br>可以得到下式：（后续都和种子论文数学推导一致）</p>
+<p><img src="C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20210906192352649.png" alt="image-20210906192352649"></p>
+<p>​        由于多轮训练，完全计算公式（7）式的梯度加和完全不现实，因此，我们采用如下公式（9）的方法进行模型的简化,其中，$\tau$等于一个较小的整数。<br>$$<br>\nabla_\hat{X}L_{adv}\approx\sum\limits_{l\in [l-\tau,l]}\frac{\partial L_{adv}}{\partial \theta^{(l)}}\frac{\partial \theta^{(l)}}{\partial \hat{X}} \tag9<br>$$</p>
+<h2 id="3-模型改进（主要工作）"><a href="#3-模型改进（主要工作）" class="headerlink" title="3. 模型改进（主要工作）"></a>3. 模型改进（主要工作）</h2><p>​        首先明确，受制于Tensorflow与Pytorch基于SGD的设计，Embbeding类的模型设计难以实现根据计算图直接求得梯度。其主要原因如下（以NCF模型为例子）：</p>
+<p>​        NCF模型的基本模型如下所示：<br>$$<br>y_{ui}=f(P^Tv_u,Q^Tv_i|P，Q，\Theta_f)\tag{10}<br>$$<br>​        其中，$P$为user-Embbeding矩阵，$Q$为item-Embbeding矩阵，$v_u$和$v_i$则是数据矩阵$X$中，值为1的元素的横纵坐标one-hot编码。</p>
+<p>​        而要让梯度能回传到外层优化模型中，我们必须求得：<br>$$<br>\nabla_\hat{X}L_{adv}\approx\sum\limits_{l\in [l-\tau,l]}\frac{\partial L_{adv}}{\partial \theta^{(l)}}\frac{\partial \theta^{(l)}}{\partial \hat{X}}\approx \sum\limits_{l\in [l-\tau,l]}\frac{\partial L_{adv}}{\partial \theta^{(l)}}\frac{\partial \theta^{(l)}}{\partial g(v_u,v_i)}\frac{\partial g(v_u,v_i)}{\partial \hat{X}}\tag{11}<br>$$<br>​        其中的$g(v_u,v_i)$是指one-hot编码的反函数。而$g(v_u,v_i)$非tensor，无法适用于自动求导。因此该方法无法实现。因此我们转而从另一个角度思考问题。如下所示：</p>
+<p>​        我们知道$\hat{X}$矩阵,其构成如下所示：<br>$$<br>\hat{X}= \begin{pmatrix}y_{11}&amp;…&amp;y_{1u}\…&amp;…&amp;…\y_{i1}&amp;…&amp;y_{iu} \end{pmatrix}\tag{12}<br>$$<br>​        其中的每个元素都符合公式(10)。于是，我们把上述矩阵$\hat{X}$拆成由u个列向量拼成的矩阵，即<br>$$<br>\hat{X}= \begin{pmatrix}y_{11}&amp;…&amp;y_{1u}\…&amp;…&amp;…\y_{i1}&amp;…&amp;y_{iu} \end{pmatrix}\tag{12}=concate_{j\in[1,u]}[(y_{j1},…,y_{ji})^T]<br>$$<br>​        记中括号里的列向量为$u_j$，由one-hot编码的特点可知：$u_j=\sum\limits_{u=j}v_i$则代入得<br>$$<br>\nabla_\hat{X}L_{adv}=\frac{\partial L_{adv}}{\partial \hat{X}}=concate_{j\in[1,u]}(\frac{\partial L_{adv}}{\partial u_j})=concate_{j\in[1,u]}(\frac{\partial L_{adv}}{\partial f(Q^Tv_i)}\frac{\partial f(Q^Tv_i)}{\partial Q^Tv_i}\frac{\partial Q^Tv_i}{\partial \sum\limits_{u=j}v_i})\tag{13}<br>$$<br>​        由于上式最右项可化简，因此将公式（13）化简成如下所示：<br>$$<br>\nabla_\hat{X}L_{adv}=\frac{\partial L_{adv}}{\partial \hat{X}}=concate_{j\in[1,u]}(\sum\limits_{u=j}\frac{\partial L_{adv}}{\partial f(Q^Tv_i)}\frac{\partial f(Q^Tv_i)}{\partial Q^Tv_i}*Q)\tag{14}<br>$$<br>​        其中，$\frac{\partial L_{adv}}{\partial f(Q^Tv_i)}\frac{\partial f(Q^Tv_i)}{\partial Q^Tv_i}$可以通过公式（6）（8）实现过程中，由SGD自动求导求得。由此绕过了one-hot编码无法通过计算图实现的障碍。</p>
+<h2 id="4-模型运行"><a href="#4-模型运行" class="headerlink" title="4. 模型运行"></a>4. 模型运行</h2><p>​       经过代码编写与代码改进，在以下实际情况下：</p>
+<blockquote>
+<ol>
+<li>公式（9）中，$\tau=1$（即unroll只进行一步）</li>
+<li>unroll不采用higher mode进行非线性优化</li>
+<li>数据集X的大小为13280（用户数量）*14007（物品数量）</li>
+<li>分batch导出结果，其中每个batch为：一个用户的所有物品，对应着上式的每一个$u_j$</li>
+<li>NCF模型退化为MLP模型，且只保留一层，该层的embbeding数量为64</li>
+</ol>
+</blockquote>
+<p>​       我成功地得到了以下的数据：</p>
+<ol>
+<li>每个batch的$\frac{\partial L_{adv}}{\partial f(Q^Tv_i)}\frac{\partial f(Q^Tv_i)}{\partial Q^Tv_i}$，其大小是64*14007，其含义是某个$u_j$对应的embbeding（one-hot）的更新梯度。</li>
+<li>$Q$,其大小是64*14007，其含义是当前所有物品的embbeding矩阵。</li>
+<li>$\frac{\partial L_{adv}}{\partial f(Q^Tv_i)}\frac{\partial f(Q^Tv_i)}{\partial Q^Tv_i}<em>Q$，由1、2计算得到。其大小是14007</em>14007。其中前一个14007代指embbeding（one-hot）的更新梯度，后一个14007代指所有物品。</li>
+<li>$\sum\limits_{u=j}\frac{\partial L_{adv}}{\partial f(Q^Tv_i)}\frac{\partial f(Q^Tv_i)}{\partial Q^Tv_i}<em>Q$,由3计算得到，其大小是1</em>14007，计算方式为3得到的矩阵的每个行向量对应位置相加。即embbeding（one-hot）更新梯度相加。</li>
+<li>$\nabla_\hat{X}L_{adv}$，理论上可以由4根据公式（14）得到，但是运行时间太长了。（详细见如下说的局限和困境）</li>
+</ol>
+<h2 id="5-上述方法的局限与新的困境"><a href="#5-上述方法的局限与新的困境" class="headerlink" title="5. 上述方法的局限与新的困境"></a>5. 上述方法的局限与新的困境</h2><p>​        上述的方法，本质上是通过自动求导计算one-hot编码后的梯度，再进行手工拼接（concate步骤）和求和（$\sum\limits_{u=j}$步骤）得到最后的梯度。但这种方法所受的局限颇大，也面临着很大的困境。将困境整理如下：</p>
+<ul>
+<li><p>由于concate步骤的存在，因此我们需要进行u次（u为用户的数量）的自动求导，才能拼接得到完整的$\nabla_\hat{X}L_{adv}$。也就是计算所消耗的时间资源，几乎是种子论文中的可使用第二种化简方法的推荐模型的u倍。这几乎是不能忍受的。【附注：我等了快20分钟，都跑不完一次得到完整的$\nabla_\hat{X}L_{adv}$】</p>
+</li>
+<li><p>由于自动求导过程中，需要根据公式（6）（8）构筑$\theta^{(l)}$与$\theta^{(l-1)}$、$v_i$、$Q$等tensor的计算关系图。而由于基于embbeding类技术的embbeding数目随着用户数量u与物品数目i极大幅度地增长。因此，该计算关系图所消耗的空间资源也远不是种子论文中itemAE所能比拟的。【附注：这就是我之前说的那个内存问题，没有用higher mode包（非线性优化）就已经需要二三十G内存了，用了higher mode包更跑不了】</p>
+</li>
+<li><p>以上的困境还只局限在第四点所设置的代码模型中，如果代码模型改为$\tau&gt;1$，采用higher mode进行非线性优化，数据集大小使用大型的真实数据集，NCF模型不退化为MLP模型，且增加MLP模型的层数以及每层的embbeding数。</p>
+<p>那需要的资源又要翻好几几几几几几番。</p>
+<p>总的来说就是，要想基于我们提出的模型和想法进行有效的代理模型运行，这在现有的框架下是几乎难以实现的。</p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/08/19/%E4%BB%8E%E3%80%8A%E9%97%B4%E5%AE%A2%E3%80%8B%E8%B0%88%E8%B5%B7%E7%9A%84%E5%93%B2%E5%AD%A6/" rel="prev" title="从《间客》谈起的哲学">
+      <i class="fa fa-chevron-left"></i> 从《间客》谈起的哲学
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/10/01/%E5%8E%A6%E5%8E%BB%E7%A7%8B%E5%8F%88%E6%9D%A5/" rel="next" title="厦去秋又来">
+      厦去秋又来 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8EEmbbeding%E6%8A%80%E6%9C%AF%E7%9A%84%E4%BB%A3%E7%90%86%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E6%94%BB%E5%87%BB"><span class="nav-number">1.</span> <span class="nav-text">基于Embbeding技术的代理模型的推荐系统攻击</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E2%80%94%E2%80%94%E6%9A%91%E6%9C%9F%E5%B7%A5%E4%BD%9C%E6%80%BB%E7%BB%93"><span class="nav-number">2.</span> <span class="nav-text">——暑期工作总结</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E8%83%8C%E6%99%AF%E4%B8%8E%E7%9B%AE%E6%A0%87"><span class="nav-number">2.1.</span> <span class="nav-text">1. 背景与目标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E7%BA%AF%E6%95%B0%E5%AD%A6%E7%90%86%E8%AE%BA%E6%A8%A1%E5%9E%8B%EF%BC%88%E4%B8%8E%E5%8E%9F%E8%AE%BA%E6%96%87%E6%9C%89%E5%B0%91%E8%AE%B8%E5%8F%98%E6%8D%A2%EF%BC%8C%E4%BD%86%E5%9F%BA%E6%9C%AC%E4%B8%80%E8%87%B4%EF%BC%89"><span class="nav-number">2.2.</span> <span class="nav-text">2. 纯数学理论模型（与原论文有少许变换，但基本一致）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E6%A8%A1%E5%9E%8B%E6%94%B9%E8%BF%9B%EF%BC%88%E4%B8%BB%E8%A6%81%E5%B7%A5%E4%BD%9C%EF%BC%89"><span class="nav-number">2.3.</span> <span class="nav-text">3. 模型改进（主要工作）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E6%A8%A1%E5%9E%8B%E8%BF%90%E8%A1%8C"><span class="nav-number">2.4.</span> <span class="nav-text">4. 模型运行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E4%B8%8A%E8%BF%B0%E6%96%B9%E6%B3%95%E7%9A%84%E5%B1%80%E9%99%90%E4%B8%8E%E6%96%B0%E7%9A%84%E5%9B%B0%E5%A2%83"><span class="nav-number">2.5.</span> <span class="nav-text">5. 上述方法的局限与新的困境</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="ClearTear"
+      src="/images/head.jpg">
+  <p class="site-author-name" itemprop="name">ClearTear</p>
+  <div class="site-description" itemprop="description">感觉那时仰望过的星空也笑话我了</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Clear-Tear" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Clear-Tear" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:z861523222@gmail.com" title="E-Mail → mailto:z861523222@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/u/3899109689" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;u&#x2F;3899109689" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/uni_cleartear" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;uni_cleartear" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ClearTear</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 支持
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+
+</body>
+</html>

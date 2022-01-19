@@ -241,6 +241,7 @@
 <p>在时间维度上，多轮的调查为构建面板数据以及对DID方法提供的有效支撑。本文选用了2014年和2018年的数据，考虑的原因如下：一是2014年尚未迎来共享经济的蓬勃期，作为控制组受灵活就业风潮影响较小，二是2014-2018期间涵盖了互联网科技依托下的灵活就业经济的发展蓬勃期，三是2020年受疫情影响强烈，宏观经济冲击对灵活就业形态产生了更多难以量化的冲击，故而不选用2020年的数据。</p>
 <h2 id="3-2-数据处理"><a href="#3-2-数据处理" class="headerlink" title="3.2 数据处理"></a>3.2 数据处理</h2><p>本文通过选用个体年收入的自然对数值以及个体的总体工作满意度（0-5，5为十分满意）指标分别作为物质上和精神上的个体效用指标。</p>
 <p>在数据筛选方面，本文采用以下的原则筛选出不同类型的人群：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -249,7 +250,8 @@
 <th>_ <strong>筛选原则</strong> _</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>A</td>
 <td>农业人员</td>
 <td>从事农林牧渔类工作的人口</td>
@@ -269,7 +271,9 @@
 <td>非就业人员</td>
 <td>不处于工作状态</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>表一 人群数据划分表</p>
 <p>根据以上原则筛选出数据后，排除掉非就业人员与农业人员，进一步将每个个体划分为以下类型：</p>
 <blockquote>
@@ -288,6 +292,7 @@
 <p>其中，du为分组虚拟变量，若个体i受政策实施的影响，则个体i属于处理组，对应的du取值为1，若个体i不受政策实施的影响，则个体i属于对照组，对应的du取值为0。dt为政策实施虚拟变量，政策实施之前dt取值为0，政策实施之后dt取值为1。du·dt为分组虚拟变量与政策实施虚拟变量的交互项，其系数就反应了政策实施地净效应。</p>
 <p>本文将2016年国家层面开始扶持共享经济和互联网平台作为政策实施点，2014年标记为政策未发生，2018年标记为政策发生后。因此处理组为：2014年从事传统就业，2018年从事灵活就业的人员。</p>
 <h1 id="四、实证模型"><a href="#四、实证模型" class="headerlink" title="四、实证模型"></a>四、实证模型</h1><h2 id="4-1-变量解释说明"><a href="#4-1-变量解释说明" class="headerlink" title="4.1 变量解释说明"></a>4.1 变量解释说明</h2><p>本文研究模型使用的变量如下表所示：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -297,17 +302,18 @@
 <th><strong>注释</strong></th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>因变量</td>
 <td>qg12_log</td>
 <td>全年总收入对数值</td>
 <td>全年总收入为0视为缺失值</td>
 </tr>
 <tr>
-<td>—</td>
-<td>—</td>
-<td>—</td>
-<td>—</td>
+<td>—-</td>
+<td>—-</td>
+<td>—-</td>
+<td>—-</td>
 </tr>
 <tr>
 <td>qg4</td>
@@ -361,9 +367,10 @@
 <td>agri</td>
 <td>是否为农业人口</td>
 <td>是=1；不是=0</td>
-<td></td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>表二 变量的解释与说明</p>
 <h2 id="4-2-DID模型"><a href="#4-2-DID模型" class="headerlink" title="4.2 DID模型"></a>4.2 DID模型</h2><p>本文的DID模型设置如下：</p>
 <p><img src="2.gif" alt="img"></p>
@@ -400,8 +407,8 @@
 <p>而该类人员实际收入并没有显著提高，反而承担了没有对应福利保障、收入不稳定等风险，这一事实也告诉我们，新型灵活就业仍应加强改革，平台类企业应该承担起应有的社会责任，自觉增加从业人员的福利保障或者实际收入，使其劳有所得。</p>
 <h1 id="六、参考文献"><a href="#六、参考文献" class="headerlink" title="六、参考文献"></a>六、参考文献</h1><p>[1] 人民资讯:2021.05.21. <a target="_blank" rel="noopener" href="https://baijiahao.baidu.com/s?id=1700326717558596981&amp;wfr=spider&amp;for=pc">https://baijiahao.baidu.com/s?id=1700326717558596981&amp;wfr=spider&amp;for=pc</a></p>
 <p>[2] 中国共享经济发展报告（2021）.2021.02.19. <a target="_blank" rel="noopener" href="http://www.sic.gov.cn/News/557/10779.htm">http://www.sic.gov.cn/News/557/10779.htm</a></p>
-<p>[3] 王欣:移动互联网时代分享经济的模式正逢其时[EB/OL].(2015-11-07). <a target="_blank" rel="noopener" href="http://www.cac.gov.cn/2015-11/07/c/_1117070017.htrn">http://www.cac.gov.cn/2015-11/07/c\_1117070017.htrn</a>.</p>
-<p>[4] 学院派Academia.现在就业难、失业快的本质原因：以美国为例. <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1iS4y197ts?spm%5C_id%5C_from=333.999.0.0">https://www.bilibili.com/video/BV1iS4y197ts?spm\_id\_from=333.999.0.0</a></p>
+<p>[3] 王欣:移动互联网时代分享经济的模式正逢其时[EB/OL].(2015-11-07). <a target="_blank" rel="noopener" href="http://www.cac.gov.cn/2015-11/07/c\_1117070017.htrn">http://www.cac.gov.cn/2015-11/07/c\_1117070017.htrn</a>.</p>
+<p>[4] 学院派Academia.现在就业难、失业快的本质原因：以美国为例. <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1iS4y197ts?spm\_id\_from=333.999.0.0">https://www.bilibili.com/video/BV1iS4y197ts?spm\_id\_from=333.999.0.0</a></p>
 <p>[5] 国务院政策例行吹风会.充分发挥灵活就业的&quot;蓄水池&quot;作用. <a target="_blank" rel="noopener" href="https://baijiahao.baidu.com/s?id=1674600054859160310&amp;wfr=spider&amp;for=pc">https://baijiahao.baidu.com/s?id=1674600054859160310&amp;wfr=spider&amp;for=pc</a></p>
 <p>[6] TONY ESMITH,YVES ZEN OU, Dual labor markets, urban unemployment, and multicentric cities[J].Journal of economic theory,1997(76):185-214.</p>
 <p>[7] J BENACH, et al. Precarious employment: Understanding an emerging social determinant of health [J]. Annual review of public health, 2014, 35(1):229-253.</p>
@@ -517,7 +524,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-count">62</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -643,6 +650,8 @@ document.querySelectorAll('.pdfobject-container').forEach(element => {
 
 
 
+
+  
 
   
 

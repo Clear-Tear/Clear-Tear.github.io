@@ -272,7 +272,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-09 16:05:18" itemprop="dateModified" datetime="2022-01-09T16:05:18+08:00">2022-01-09</time>
+                <time title="修改时间：2022-01-19 11:45:51" itemprop="dateModified" datetime="2022-01-19T11:45:51+08:00">2022-01-19</time>
               </span>
 
           
@@ -909,7 +909,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-19 11:37:27" itemprop="dateModified" datetime="2022-01-19T11:37:27+08:00">2022-01-19</time>
+                <time title="修改时间：2022-01-19 11:43:48" itemprop="dateModified" datetime="2022-01-19T11:43:48+08:00">2022-01-19</time>
               </span>
 
           
@@ -983,13 +983,13 @@ y_{ui}=f(P^Tv_u,Q^Tv_i|P，Q，\Theta_f)\tag{10}</script><p>​        其中，
 <ol>
 <li>每个batch的$\frac{\partial L_{adv}}{\partial f(Q^Tv_i)}\frac{\partial f(Q^Tv_i)}{\partial Q^Tv_i}$，其大小是64*14007，其含义是某个$u_j$对应的embbeding（one-hot）的更新梯度。</li>
 <li>$Q$,其大小是64*14007，其含义是当前所有物品的embbeding矩阵。</li>
-<li>$\frac{\partial L_{adv}}{\partial f(Q^Tv_i)}\frac{\partial f(Q^Tv_i)}{\partial Q^Tv_i}<em>Q$，由1、2计算得到。其大小是14007</em>14007。其中前一个14007代指embbeding（one-hot）的更新梯度，后一个14007代指所有物品。</li>
-<li>$\sum\limits_{u=j}\frac{\partial L_{adv}}{\partial f(Q^Tv_i)}\frac{\partial f(Q^Tv_i)}{\partial Q^Tv_i}<em>Q$,由3计算得到，其大小是1</em>14007，计算方式为3得到的矩阵的每个行向量对应位置相加。即embbeding（one-hot）更新梯度相加。</li>
+<li>$\frac{\partial L_{adv}}{\partial f(Q^Tv_i)}\frac{\partial f(Q^Tv_i)}{\partial Q^Tv_i}Q$，由1、2计算得到。其大小是14007x14007。其中前一个14007代指embbeding（one-hot）的更新梯度，后一个14007代指所有物品。</li>
+<li>$\sum\limits_{u=j}\frac{\partial L_{adv}}{\partial f(Q^Tv_i)}\frac{\partial f(Q^Tv_i)}{\partial Q^Tv_i}Q$,由3计算得到，其大小是1x14007，计算方式为3得到的矩阵的每个行向量对应位置相加。即embbeding（one-hot）更新梯度相加。</li>
 <li>$\nabla_\hat{X}L_{adv}$，理论上可以由4根据公式（14）得到，但是运行时间太长了。（详细见如下说的局限和困境）</li>
 </ol>
 <h2 id="5-上述方法的局限与新的困境"><a href="#5-上述方法的局限与新的困境" class="headerlink" title="5. 上述方法的局限与新的困境"></a>5. 上述方法的局限与新的困境</h2><p>​        上述的方法，本质上是通过自动求导计算one-hot编码后的梯度，再进行手工拼接（concate步骤）和求和（$\sum\limits_{u=j}$步骤）得到最后的梯度。但这种方法所受的局限颇大，也面临着很大的困境。将困境整理如下：</p>
 <ul>
-<li><p>由于concate步骤的存在，因此我们需要进行u次（u为用户的数量）的自动求导，才能拼接得到完整的$\nabla_\hat{X}L_{adv}$ $。也就是计算所消耗的时间资源，几乎是种子论文中的可使用第二种化简方法的推荐模型的u倍。这几乎是不能忍受的。【附注：我等了快20分钟，都跑不完一次得到完整的$\nabla_\hat{X}L_{adv}$】</p>
+<li><p>由于concate步骤的存在，因此我们需要进行u次（u为用户的数量）的自动求导，才能拼接得到完整的$\nabla_\hat{X}L_{adv}$ 。也就是计算所消耗的时间资源，几乎是种子论文中的可使用第二种化简方法的推荐模型的u倍。这几乎是不能忍受的。【附注：我等了快20分钟，都跑不完一次得到完整的$\nabla_\hat{X}L_{adv}$】</p>
 </li>
 <li><p>由于自动求导过程中，需要根据公式（6）（8）构筑$\theta^{(l)}$与$\theta^{(l-1)}$、$v_i$、$Q$等tensor的计算关系图。而由于基于embbeding类技术的embbeding数目随着用户数量u与物品数目i极大幅度地增长。因此，该计算关系图所消耗的空间资源也远不是种子论文中itemAE所能比拟的。【附注：这就是我之前说的那个内存问题，没有用higher mode包（非线性优化）就已经需要二三十G内存了，用了higher mode包更跑不了】</p>
 </li>
